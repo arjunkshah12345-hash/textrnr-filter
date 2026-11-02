@@ -5,7 +5,8 @@
   font-weight: 400 800;
   font-display: swap;
   src: url("../fonts/syne-variable.woff2") format("woff2-variations"),
-    url("../fonts/syne-variable.woff2") format("woff2");
+    url("../fonts/syne-variable.woff2") format("woff2"),
+    url("../fonts/Syne-wght.ttf") format("truetype");
 }
 
 /* VibeUI dark tokens — https://tryjasmine.dev/docs/theming */

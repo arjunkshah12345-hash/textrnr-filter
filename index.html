@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>textrnr filter — lo-fi night grade</title>
+    <meta
+      name="description"
+      content="Open-source soft-focus night filter: bloom, colored grain, warm/cool grade. Upload an image in the browser."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,450;9..40,600&family=Fraunces:opsz,wght@9..144,500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./css/styles.css" />
+  </head>
+  <body>
+    <main class="wrap">
+      <header class="top">
+        <h1 class="brand">textrnr <span>filter</span></h1>
+        <a
+          class="gh"
+          id="repo-link"
+          href="https://github.com/arjunkshah12345-hash/textrnr-filter"
+          target="_blank"
+          rel="noreferrer"
+          >GitHub ↗</a
+        >
+      </header>
+
+      <p class="lede">
+        Soft focus, amber bloom, cool shadows, and dense colored film grain —
+        inspired by intimate dusk photography. Runs entirely in your browser.
+        Nothing uploads to a server.
+      </p>
+
+      <div class="grid">
+        <section class="panel">
+          <div class="drop" id="drop" role="button" tabindex="0">
+            <div>
+              <strong>Drop a photo</strong>
+              <span>or click to choose · jpg / png / webp</span>
+            </div>
+          </div>
+          <input id="file" type="file" accept="image/*" hidden />
+
+          <div class="controls">
+            <div class="control">
+              <label for="strength">Strength</label>
+              <output id="strength-val">1.00</output>
+              <input id="strength" type="range" min="0.4" max="1.6" step="0.05" value="1" />
+            </div>
+            <div class="control">
+              <label for="blur">Soft focus</label>
+              <output id="blur-val">14</output>
+              <input id="blur" type="range" min="4" max="28" step="1" value="14" />
+            </div>
+            <div class="control">
+              <label for="grain">Grain</label>
+              <output id="grain-val">38</output>
+              <input id="grain" type="range" min="8" max="64" step="1" value="38" />
+            </div>
+            <div class="control">
+              <label for="warmth">Warm / cool</label>
+              <output id="warmth-val">0.20</output>
+              <input id="warmth" type="range" min="0" max="0.45" step="0.01" value="0.2" />
+            </div>
+            <div class="control">
+              <label for="vignette">Vignette</label>
+              <output id="vignette-val">0.58</output>
+              <input id="vignette" type="range" min="0" max="0.9" step="0.01" value="0.58" />
+            </div>
+          </div>
+
+          <div class="actions">
+            <button class="primary" id="process" type="button" disabled>Apply filter</button>
+            <button class="ghost" id="download" type="button" disabled>Download PNG</button>
+            <button class="ghost" id="sample" type="button">Load sample</button>
+          </div>
+          <p class="status" id="status">Waiting for an image.</p>
+        </section>
+
+        <section class="panel stage" id="stage" hidden>
+          <div class="pair">
+            <div>
+              <div class="frame">
+                <div style="width:100%">
+                  <h3 style="padding:0.75rem 0.9rem 0">Before</h3>
+                  <div id="before"></div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div class="frame">
+                <div style="width:100%">
+                  <h3 style="padding:0.75rem 0.9rem 0">After</h3>
+                  <div id="after">
+                    <p class="placeholder">Hit apply to run the filter.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <p class="foot">
+        Open source under MIT. Python CLI in <code>python/textrnr_filter.py</code>.
+        Aesthetic inspired by public dusk photography posts — not affiliated.
+      </p>
+    </main>
+    <script type="module" src="./js/app.js"></script>
+  </body>
+</html>

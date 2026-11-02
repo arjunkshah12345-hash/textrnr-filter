@@ -1,0 +1,298 @@
+:root {
+  --ink: #0a0c12;
+  --fog: #d8e2ec;
+  --mute: #8a96a8;
+  --amber: #f0a05a;
+  --amber-deep: #c46a2e;
+  --teal: #6eb6c9;
+  --panel: rgba(16, 20, 30, 0.72);
+  --line: rgba(216, 226, 236, 0.12);
+  --radius: 22px;
+  --font-display: "Fraunces", Georgia, serif;
+  --font-body: "DM Sans", system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--fog);
+  background:
+    radial-gradient(ellipse 80% 55% at 15% 10%, rgba(110, 182, 201, 0.18), transparent 55%),
+    radial-gradient(ellipse 70% 50% at 90% 85%, rgba(240, 160, 90, 0.22), transparent 50%),
+    radial-gradient(ellipse 60% 40% at 50% 40%, rgba(80, 40, 90, 0.25), transparent 60%),
+    linear-gradient(180deg, #0b1018 0%, #07090e 100%);
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.18;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+  z-index: 0;
+}
+
+.wrap {
+  position: relative;
+  z-index: 1;
+  width: min(1120px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 3.5rem 0 4.5rem;
+}
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  margin-bottom: 2.75rem;
+}
+
+.brand {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(2.4rem, 5vw, 3.6rem);
+  letter-spacing: -0.03em;
+  line-height: 0.95;
+  margin: 0;
+}
+
+.brand span {
+  color: var(--amber);
+}
+
+.gh {
+  color: var(--mute);
+  text-decoration: none;
+  font-size: 0.95rem;
+  border-bottom: 1px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.gh:hover {
+  color: var(--fog);
+  border-color: var(--fog);
+}
+
+.lede {
+  max-width: 34rem;
+  font-size: 1.125rem;
+  line-height: 1.55;
+  color: var(--mute);
+  margin: 0 0 2.5rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (max-width: 880px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.35rem;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+}
+
+.drop {
+  min-height: 220px;
+  border: 1px dashed rgba(240, 160, 90, 0.35);
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, transform 0.2s;
+  background: rgba(240, 160, 90, 0.04);
+}
+
+.drop:hover,
+.drop.is-hot {
+  border-color: var(--amber);
+  background: rgba(240, 160, 90, 0.09);
+  transform: translateY(-1px);
+}
+
+.drop strong {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  font-weight: 500;
+  margin-bottom: 0.35rem;
+}
+
+.drop span {
+  color: var(--mute);
+  font-size: 0.95rem;
+}
+
+.controls {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+
+.control {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.35rem 0.75rem;
+  align-items: center;
+}
+
+.control label {
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+
+.control output {
+  font-variant-numeric: tabular-nums;
+  color: var(--teal);
+  font-size: 0.9rem;
+}
+
+input[type="range"] {
+  grid-column: 1 / -1;
+  width: 100%;
+  accent-color: var(--amber);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: 1.25rem;
+}
+
+button,
+.btn {
+  appearance: none;
+  border: 0;
+  border-radius: 999px;
+  padding: 0.78rem 1.2rem;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s, opacity 0.15s, background 0.15s;
+}
+
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+button.primary {
+  background: linear-gradient(135deg, var(--amber), var(--amber-deep));
+  color: #1a1008;
+}
+
+button.ghost,
+.btn.ghost {
+  background: transparent;
+  color: var(--fog);
+  border: 1px solid var(--line);
+}
+
+button:not(:disabled):hover {
+  transform: translateY(-1px);
+}
+
+.status {
+  margin-top: 0.9rem;
+  min-height: 1.25rem;
+  color: var(--mute);
+  font-size: 0.92rem;
+}
+
+.stage {
+  display: grid;
+  gap: 1rem;
+}
+
+.pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.85rem;
+}
+
+@media (max-width: 560px) {
+  .pair {
+    grid-template-columns: 1fr;
+  }
+}
+
+.frame {
+  border-radius: 16px;
+  overflow: hidden;
+  background: #05070c;
+  border: 1px solid var(--line);
+  min-height: 220px;
+  display: grid;
+  place-items: center;
+}
+
+.frame h3 {
+  margin: 0 0 0.5rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mute);
+  font-weight: 600;
+}
+
+.frame canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.placeholder {
+  color: var(--mute);
+  padding: 2rem 1rem;
+  text-align: center;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.foot {
+  margin-top: 2.5rem;
+  color: var(--mute);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.foot a {
+  color: var(--teal);
+}
+
+.foot code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.85em;
+  color: var(--fog);
+}

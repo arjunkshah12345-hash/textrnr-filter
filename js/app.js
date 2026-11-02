@@ -18,11 +18,11 @@ const compareBefore = document.getElementById("compare-before");
 const compareAfter = document.getElementById("compare-after");
 
 const PRESETS = {
-  // Grain calibrated to carousel f-3 (visible but not sandpaper)
-  classic: { strength: 1, blur: 14, grain: 24, warmth: 0.2, vignette: 0.58 },
-  soft: { strength: 0.75, blur: 18, grain: 16, warmth: 0.16, vignette: 0.45 },
-  heavy: { strength: 1.25, blur: 12, grain: 34, warmth: 0.24, vignette: 0.68 },
-  cold: { strength: 1.05, blur: 15, grain: 22, warmth: 0.08, vignette: 0.62 },
+  // Tuned to original night posts (f-3 / rainy-window dream look)
+  classic: { strength: 1.05, blur: 22, grain: 24, warmth: 0.28, vignette: 0.64 },
+  soft: { strength: 0.85, blur: 26, grain: 18, warmth: 0.22, vignette: 0.52 },
+  heavy: { strength: 1.2, blur: 18, grain: 30, warmth: 0.32, vignette: 0.72 },
+  cold: { strength: 1.05, blur: 22, grain: 22, warmth: 0.12, vignette: 0.66 },
 };
 
 const sliders = {

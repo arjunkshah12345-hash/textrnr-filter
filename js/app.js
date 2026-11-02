@@ -110,9 +110,8 @@ function fitCompareCanvases(srcCanvas, destCanvas) {
   destCanvas.width = cw;
   destCanvas.height = ch;
   const ctx = destCanvas.getContext("2d");
-  ctx.fillStyle = "#050403";
+  ctx.fillStyle = "#111110";
   ctx.fillRect(0, 0, cw, ch);
-  // cover the stage — no letterbox
   const scale = Math.max(cw / srcCanvas.width, ch / srcCanvas.height);
   const dw = srcCanvas.width * scale;
   const dh = srcCanvas.height * scale;
@@ -153,9 +152,11 @@ function showPreview(img) {
   afterEl.innerHTML = `<p class="placeholder">Running filter…</p>`;
   compare.hidden = true;
   stage.classList.remove("has-result");
+  stage.hidden = false;
   processBtn.disabled = false;
   downloadBtn.disabled = true;
   resultCanvas = null;
+  stage.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 async function loadFile(file, { auto = true } = {}) {
@@ -248,7 +249,7 @@ async function process() {
     const ms = Math.round(performance.now() - t0);
     const presetNote = activePreset ? ` · ${activePreset}` : "";
     setStatus(
-      `Done in ${ms}ms · ${resultCanvas.width}×${resultCanvas.height}${presetNote} · drag slider to compare`
+      `Done in ${ms}ms · ${resultCanvas.width}×${resultCanvas.height}${presetNote}`
     );
   } catch (err) {
     console.error(err);
@@ -287,7 +288,3 @@ async function loadSample() {
 sampleBtn.addEventListener("click", () => {
   loadSample().catch(() => setStatus("Sample missing locally."));
 });
-
-loadSample().catch(() =>
-  setStatus("Drop a photo, paste, or tap Sample.")
-);

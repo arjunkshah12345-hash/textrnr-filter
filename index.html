@@ -6,156 +6,226 @@
     <title>textrnr — night grade</title>
     <meta
       name="description"
-      content="Open-source soft-focus night filter. Soft bloom, cool shadows, colored grain. Runs in your browser — nothing leaves your device."
+      content="Soft-focus night filter. Soft bloom, cool shadows, colored grain. Runs in your browser."
     />
     <meta property="og:title" content="textrnr filter" />
-    <meta
-      property="og:description"
-      content="Soft focus, amber bloom, cool shadows, dense film grain."
-    />
+    <meta property="og:description" content="Soft focus night grade. Stays on your device." />
     <meta property="og:type" content="website" />
-    <meta
-      property="og:url"
-      content="https://arjunkshah12345-hash.github.io/textrnr-filter/"
-    />
-    <meta name="theme-color" content="#0e0c0a" />
+    <meta property="og:url" content="https://arjunkshah12345-hash.github.io/textrnr-filter/" />
+    <meta name="theme-color" content="#ffffff" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;550;650&family=Instrument+Serif:ital@0;1&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="./css/styles.css" />
   </head>
   <body>
-    <div class="grain" aria-hidden="true"></div>
+    <header class="nav">
+      <a class="nav-brand" href="./">textrnr</a>
+      <a
+        class="nav-link"
+        href="https://github.com/arjunkshah12345-hash/textrnr-filter"
+        target="_blank"
+        rel="noreferrer"
+        >Source</a
+      >
+    </header>
 
-    <aside class="rail">
-      <header class="rail-top">
-        <h1 class="brand">textrnr</h1>
-        <a
-          class="gh"
-          href="https://github.com/arjunkshah12345-hash/textrnr-filter"
-          target="_blank"
-          rel="noreferrer"
-          >Source</a
-        >
-      </header>
-
-      <p class="lede">
-        Soft focus night grade.<br />
-        Amber bloom, cool shadows, grain.<br />
-        Stays on your device.
+    <section class="hero">
+      <p class="eyebrow">Open source · browser only</p>
+      <h1 class="hero-title">Soft focus night grade.</h1>
+      <p class="hero-lede">
+        Amber bloom, cool shadows, dense grain.<br />
+        Drop a photo — nothing leaves your device.
       </p>
 
       <div
-        class="drop"
+        class="file-drop"
         id="drop"
         role="button"
         tabindex="0"
         aria-label="Upload an image"
       >
-        <span class="drop-title">Drop a photo</span>
-        <span class="drop-hint">or paste · jpg / png / webp</span>
+        <span class="file-drop-icon" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 256 256" fill="currentColor">
+            <path
+              d="M224,152v56a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V152a8,8,0,0,1,16,0v56H208V152a8,8,0,0,1,16,0ZM93.66,85.66,120,59.31V152a8,8,0,0,0,16,0V59.31l26.34,26.35a8,8,0,0,0,11.32-11.32l-40-40a8,8,0,0,0-11.32,0l-40,40a8,8,0,0,0,11.32,11.32Z"
+            />
+          </svg>
+        </span>
+        <span class="file-drop-label">Drop a photo here</span>
+        <span class="file-drop-hint">or click to browse · paste · jpg / png / webp</span>
       </div>
       <input id="file" type="file" accept="image/*" hidden />
 
-      <div class="presets" id="presets" aria-label="Presets">
-        <button type="button" class="chip is-on" data-preset="classic">Classic</button>
-        <button type="button" class="chip" data-preset="soft">Soft</button>
-        <button type="button" class="chip" data-preset="heavy">Heavy</button>
-        <button type="button" class="chip" data-preset="cold">Cold</button>
+      <div class="hero-actions">
+        <button class="btn btn-primary" id="process" type="button" disabled>Apply</button>
+        <button class="btn btn-secondary" id="download" type="button" disabled>Download</button>
+        <button class="btn btn-ghost" id="sample" type="button">Try sample</button>
       </div>
+      <p class="status" id="status">Waiting for an image.</p>
+    </section>
 
-      <div class="controls">
-        <div class="control">
-          <div class="control-row">
-            <label for="strength">Strength</label>
-            <output id="strength-val">1.00</output>
-          </div>
-          <input id="strength" type="range" min="0.4" max="1.6" step="0.05" value="1" />
+    <section class="workspace" id="stage" hidden>
+      <div class="workspace-inner">
+        <div class="presets" id="presets" aria-label="Presets">
+          <button type="button" class="chip is-on" data-preset="classic">Classic</button>
+          <button type="button" class="chip" data-preset="soft">Soft</button>
+          <button type="button" class="chip" data-preset="heavy">Heavy</button>
+          <button type="button" class="chip" data-preset="cold">Cold</button>
         </div>
-        <div class="control">
-          <div class="control-row">
-            <label for="blur">Soft focus</label>
-            <output id="blur-val">14</output>
-          </div>
-          <input id="blur" type="range" min="4" max="28" step="1" value="14" />
-        </div>
-        <div class="control">
-          <div class="control-row">
-            <label for="grain">Grain</label>
-            <output id="grain-val">38</output>
-          </div>
-          <input id="grain" type="range" min="8" max="64" step="1" value="38" />
-        </div>
-        <div class="control">
-          <div class="control-row">
-            <label for="warmth">Warm / cool</label>
-            <output id="warmth-val">0.20</output>
-          </div>
-          <input id="warmth" type="range" min="0" max="0.45" step="0.01" value="0.2" />
-        </div>
-        <div class="control">
-          <div class="control-row">
-            <label for="vignette">Vignette</label>
-            <output id="vignette-val">0.58</output>
-          </div>
-          <input id="vignette" type="range" min="0" max="0.9" step="0.01" value="0.58" />
-        </div>
-      </div>
 
-      <div class="actions">
-        <button class="primary" id="process" type="button" disabled>Apply</button>
-        <button class="ghost" id="download" type="button" disabled>Download</button>
-        <button class="ghost" id="sample" type="button">Sample</button>
-      </div>
-
-      <p class="status" id="status">Loading sample…</p>
-
-      <p class="foot">
-        MIT ·
-        <a href="https://github.com/arjunkshah12345-hash/textrnr-filter">GitHub</a>
-        · Python CLI in <code>python/</code>
-      </p>
-    </aside>
-
-    <section class="stage" id="stage" aria-label="Preview">
-      <div class="compare" id="compare" hidden>
-        <div class="compare-stack" id="compare-stack">
-          <canvas id="compare-after" aria-hidden="true"></canvas>
-          <div class="compare-before-wrap" id="before-wrap">
-            <canvas id="compare-before" aria-hidden="true"></canvas>
+        <div class="controls">
+          <div class="control">
+            <div class="control-row">
+              <label for="strength">Strength</label>
+              <output id="strength-val">1.00</output>
+            </div>
+            <input id="strength" type="range" min="0.4" max="1.6" step="0.05" value="1" />
           </div>
-          <input
-            class="compare-range"
-            id="compare-range"
-            type="range"
-            min="0"
-            max="100"
-            value="50"
-            aria-label="Compare before and after"
-          />
-          <div class="compare-labels">
-            <span>Before</span>
-            <span>After</span>
+          <div class="control">
+            <div class="control-row">
+              <label for="blur">Soft focus</label>
+              <output id="blur-val">14</output>
+            </div>
+            <input id="blur" type="range" min="4" max="28" step="1" value="14" />
+          </div>
+          <div class="control">
+            <div class="control-row">
+              <label for="grain">Grain</label>
+              <output id="grain-val">38</output>
+            </div>
+            <input id="grain" type="range" min="8" max="64" step="1" value="38" />
+          </div>
+          <div class="control">
+            <div class="control-row">
+              <label for="warmth">Warm / cool</label>
+              <output id="warmth-val">0.20</output>
+            </div>
+            <input id="warmth" type="range" min="0" max="0.45" step="0.01" value="0.2" />
+          </div>
+          <div class="control">
+            <div class="control-row">
+              <label for="vignette">Vignette</label>
+              <output id="vignette-val">0.58</output>
+            </div>
+            <input id="vignette" type="range" min="0" max="0.9" step="0.01" value="0.58" />
           </div>
         </div>
-      </div>
 
-      <div class="pair" id="pair">
-        <div class="frame">
-          <p class="frame-label">Before</p>
-          <div id="before"></div>
+        <div class="compare" id="compare" hidden>
+          <div class="compare-stack" id="compare-stack">
+            <canvas id="compare-after" aria-hidden="true"></canvas>
+            <div class="compare-before-wrap" id="before-wrap">
+              <canvas id="compare-before" aria-hidden="true"></canvas>
+            </div>
+            <input
+              class="compare-range"
+              id="compare-range"
+              type="range"
+              min="0"
+              max="100"
+              value="50"
+              aria-label="Compare before and after"
+            />
+            <div class="compare-labels">
+              <span>Before</span>
+              <span>After</span>
+            </div>
+          </div>
         </div>
-        <div class="frame">
-          <p class="frame-label">After</p>
-          <div id="after">
-            <p class="placeholder">Your grade appears here.</p>
+
+        <div class="pair" id="pair">
+          <div class="frame">
+            <p class="frame-label">Before</p>
+            <div id="before"></div>
+          </div>
+          <div class="frame">
+            <p class="frame-label">After</p>
+            <div id="after">
+              <p class="placeholder">Your grade appears here.</p>
+            </div>
           </div>
         </div>
       </div>
     </section>
+
+    <section class="marquees" aria-label="Examples">
+      <div class="marquee" data-reverse="false" style="--duration: 48s">
+        <div class="marquee-track">
+          <div class="marquee-group">
+            <img src="./examples/carousel/raw-1.jpg" alt="" />
+            <img src="./examples/carousel/g-2.jpg" alt="" />
+            <img src="./examples/carousel/raw-2.jpg" alt="" />
+            <img src="./examples/carousel/g-1.jpg" alt="" />
+            <img src="./examples/carousel/g-3.jpg" alt="" />
+            <img src="./examples/carousel/raw-3.jpg" alt="" />
+          </div>
+          <div class="marquee-group" aria-hidden="true">
+            <img src="./examples/carousel/raw-1.jpg" alt="" />
+            <img src="./examples/carousel/g-2.jpg" alt="" />
+            <img src="./examples/carousel/raw-2.jpg" alt="" />
+            <img src="./examples/carousel/g-1.jpg" alt="" />
+            <img src="./examples/carousel/g-3.jpg" alt="" />
+            <img src="./examples/carousel/raw-3.jpg" alt="" />
+          </div>
+        </div>
+      </div>
+
+      <div class="marquee reverse" data-reverse="true" style="--duration: 56s">
+        <div class="marquee-track">
+          <div class="marquee-group">
+            <img src="./examples/carousel/g-4.jpg" alt="" />
+            <img src="./examples/carousel/raw-3.jpg" alt="" />
+            <img src="./examples/carousel/g-5.jpg" alt="" />
+            <img src="./examples/carousel/g-2.jpg" alt="" />
+            <img src="./examples/carousel/raw-1.jpg" alt="" />
+            <img src="./examples/carousel/g-3.jpg" alt="" />
+          </div>
+          <div class="marquee-group" aria-hidden="true">
+            <img src="./examples/carousel/g-4.jpg" alt="" />
+            <img src="./examples/carousel/raw-3.jpg" alt="" />
+            <img src="./examples/carousel/g-5.jpg" alt="" />
+            <img src="./examples/carousel/g-2.jpg" alt="" />
+            <img src="./examples/carousel/raw-1.jpg" alt="" />
+            <img src="./examples/carousel/g-3.jpg" alt="" />
+          </div>
+        </div>
+      </div>
+
+      <div class="marquee" data-reverse="false" style="--duration: 42s">
+        <div class="marquee-track">
+          <div class="marquee-group">
+            <img src="./examples/carousel/g-1.jpg" alt="" />
+            <img src="./examples/carousel/raw-2.jpg" alt="" />
+            <img src="./examples/carousel/g-3.jpg" alt="" />
+            <img src="./examples/carousel/g-5.jpg" alt="" />
+            <img src="./examples/carousel/raw-1.jpg" alt="" />
+            <img src="./examples/carousel/g-4.jpg" alt="" />
+          </div>
+          <div class="marquee-group" aria-hidden="true">
+            <img src="./examples/carousel/g-1.jpg" alt="" />
+            <img src="./examples/carousel/raw-2.jpg" alt="" />
+            <img src="./examples/carousel/g-3.jpg" alt="" />
+            <img src="./examples/carousel/g-5.jpg" alt="" />
+            <img src="./examples/carousel/raw-1.jpg" alt="" />
+            <img src="./examples/carousel/g-4.jpg" alt="" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="foot">
+      <span>MIT · inspired by
+        <a href="https://tryjasmine.dev/" target="_blank" rel="noreferrer">VibeUI</a>
+      </span>
+      <span>
+        <a href="https://github.com/arjunkshah12345-hash/textrnr-filter">GitHub</a>
+        · Python CLI in <code>python/</code>
+      </span>
+    </footer>
 
     <script type="module" src="./js/app.js"></script>
   </body>

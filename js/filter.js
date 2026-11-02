@@ -221,7 +221,7 @@ function vignette(sourceCanvas, strength = 0.55) {
   return sourceCanvas;
 }
 
-function coloredGrain(sourceCanvas, amount = 36, chroma = 0.65, seed = 7) {
+function coloredGrain(sourceCanvas, amount = 24, chroma = 0.55, seed = 7) {
   const w = sourceCanvas.width;
   const h = sourceCanvas.height;
   const ctx = sourceCanvas.getContext("2d");
@@ -257,7 +257,7 @@ export function applyTextrnrFilter(image, opts = {}) {
   const {
     strength = 1.0,
     blur = 14,
-    grain = 38,
+    grain = 24,
     bloomStrength = 0.62,
     warmth = 0.2,
     vignetteStrength = 0.58,
@@ -309,7 +309,7 @@ export function applyTextrnrFilter(image, opts = {}) {
   work = vignette(work, vignetteStrength * Math.min(s, 1.4));
 
   // 8 grain
-  work = coloredGrain(work, grain * s, 0.7, seed);
+  work = coloredGrain(work, grain * s, 0.55, seed);
 
   return work;
 }
@@ -317,7 +317,7 @@ export function applyTextrnrFilter(image, opts = {}) {
 export const DEFAULTS = {
   strength: 1,
   blur: 14,
-  grain: 38,
+  grain: 24,
   bloomStrength: 0.62,
   warmth: 0.2,
   vignetteStrength: 0.58,

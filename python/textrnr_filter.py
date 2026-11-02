@@ -7,7 +7,7 @@ Soft focus + bloom + colored film grain + warm/cool grade + vignette.
 Usage:
   python textrnr_filter.py input.jpg
   python textrnr_filter.py input.jpg -o out.png
-  python textrnr_filter.py input.jpg --strength 1.2 --blur 18 --grain 42
+  python textrnr_filter.py input.jpg --strength 1.2 --blur 18 --grain 24
 """
 
 from __future__ import annotations
@@ -48,8 +48,8 @@ def bloom(img: Image.Image, strength: float = 0.55, threshold: int = 150) -> Ima
 
 def colored_grain(
     img: Image.Image,
-    amount: float = 36.0,
-    chroma: float = 0.65,
+    amount: float = 24.0,
+    chroma: float = 0.55,
     seed: int = 7,
 ) -> Image.Image:
     """Dense multicolored film grain (not mono)."""
@@ -114,7 +114,7 @@ def apply_textrnr_filter(
     *,
     strength: float = 1.0,
     blur: float = 14.0,
-    grain: float = 38.0,
+    grain: float = 24.0,
     bloom_strength: float = 0.62,
     warmth: float = 0.2,
     vignette_strength: float = 0.58,
@@ -147,7 +147,7 @@ def apply_textrnr_filter(
     work = vignette(work, strength=vignette_strength * min(s, 1.4))
 
     # 8) grain last so it stays crisp on top of blur
-    work = colored_grain(work, amount=grain * s, chroma=0.7, seed=seed)
+    work = colored_grain(work, amount=grain * s, chroma=0.55, seed=seed)
 
     return work
 
@@ -158,7 +158,7 @@ def main() -> None:
     p.add_argument("-o", "--output", type=Path, default=None)
     p.add_argument("--strength", type=float, default=1.0)
     p.add_argument("--blur", type=float, default=14.0)
-    p.add_argument("--grain", type=float, default=38.0)
+    p.add_argument("--grain", type=float, default=24.0)
     p.add_argument("--seed", type=int, default=7)
     args = p.parse_args()
 

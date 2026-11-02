@@ -18,10 +18,11 @@ const compareBefore = document.getElementById("compare-before");
 const compareAfter = document.getElementById("compare-after");
 
 const PRESETS = {
-  classic: { strength: 1, blur: 14, grain: 38, warmth: 0.2, vignette: 0.58 },
-  soft: { strength: 0.75, blur: 18, grain: 22, warmth: 0.16, vignette: 0.45 },
-  heavy: { strength: 1.25, blur: 12, grain: 56, warmth: 0.24, vignette: 0.68 },
-  cold: { strength: 1.05, blur: 15, grain: 34, warmth: 0.08, vignette: 0.62 },
+  // Grain calibrated to carousel f-3 (visible but not sandpaper)
+  classic: { strength: 1, blur: 14, grain: 24, warmth: 0.2, vignette: 0.58 },
+  soft: { strength: 0.75, blur: 18, grain: 16, warmth: 0.16, vignette: 0.45 },
+  heavy: { strength: 1.25, blur: 12, grain: 34, warmth: 0.24, vignette: 0.68 },
+  cold: { strength: 1.05, blur: 15, grain: 22, warmth: 0.08, vignette: 0.62 },
 };
 
 const sliders = {

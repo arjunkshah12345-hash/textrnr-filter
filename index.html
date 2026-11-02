@@ -22,6 +22,12 @@
     <link rel="stylesheet" href="./css/styles.css" />
   </head>
   <body>
+    <div class="veil" aria-hidden="true">
+      <div class="veil-side veil-left"></div>
+      <div class="veil-side veil-right"></div>
+      <div class="veil-bottom"></div>
+    </div>
+
     <header class="nav">
       <a class="nav-brand" href="./">textrnr</a>
       <a
@@ -82,35 +88,35 @@
               <label for="strength">Strength</label>
               <output id="strength-val">1.00</output>
             </div>
-            <input id="strength" type="range" min="0.4" max="1.6" step="0.05" value="1" />
+            <input id="strength" type="range" min="0.4" max="1.5" step="0.05" value="1" />
           </div>
           <div class="control">
             <div class="control-row">
               <label for="blur">Soft focus</label>
-              <output id="blur-val">14</output>
+              <output id="blur-val">9</output>
             </div>
-            <input id="blur" type="range" min="4" max="28" step="1" value="14" />
+            <input id="blur" type="range" min="3" max="18" step="1" value="9" />
           </div>
           <div class="control">
             <div class="control-row">
               <label for="grain">Grain</label>
-              <output id="grain-val">38</output>
+              <output id="grain-val">12</output>
             </div>
-            <input id="grain" type="range" min="8" max="64" step="1" value="38" />
+            <input id="grain" type="range" min="0" max="28" step="1" value="12" />
           </div>
           <div class="control">
             <div class="control-row">
               <label for="warmth">Warm / cool</label>
-              <output id="warmth-val">0.20</output>
+              <output id="warmth-val">0.12</output>
             </div>
-            <input id="warmth" type="range" min="0" max="0.45" step="0.01" value="0.2" />
+            <input id="warmth" type="range" min="0" max="0.3" step="0.01" value="0.12" />
           </div>
           <div class="control">
             <div class="control-row">
               <label for="vignette">Vignette</label>
-              <output id="vignette-val">0.58</output>
+              <output id="vignette-val">0.34</output>
             </div>
-            <input id="vignette" type="range" min="0" max="0.9" step="0.01" value="0.58" />
+            <input id="vignette" type="range" min="0" max="0.7" step="0.01" value="0.34" />
           </div>
         </div>
 
@@ -152,47 +158,71 @@
     </section>
 
     <section class="marquees" aria-label="Filtered examples">
-      <div class="marquee" style="--duration: 52s">
+      <div class="marquee" style="--duration: 48s">
         <div class="marquee-track">
           <div class="marquee-group">
             <img src="./examples/carousel/f-1.jpg" alt="textrnr grade example" />
             <img src="./examples/carousel/f-2.jpg" alt="" />
             <img src="./examples/carousel/f-3.jpg" alt="" />
+            <img src="./examples/carousel/f-4.jpg" alt="" />
           </div>
           <div class="marquee-group" aria-hidden="true">
             <img src="./examples/carousel/f-1.jpg" alt="" />
             <img src="./examples/carousel/f-2.jpg" alt="" />
             <img src="./examples/carousel/f-3.jpg" alt="" />
+            <img src="./examples/carousel/f-4.jpg" alt="" />
+          </div>
+          <div class="marquee-group" aria-hidden="true">
+            <img src="./examples/carousel/f-1.jpg" alt="" />
+            <img src="./examples/carousel/f-2.jpg" alt="" />
+            <img src="./examples/carousel/f-3.jpg" alt="" />
+            <img src="./examples/carousel/f-4.jpg" alt="" />
           </div>
         </div>
       </div>
 
-      <div class="marquee reverse" style="--duration: 64s">
+      <div class="marquee reverse" style="--duration: 60s">
         <div class="marquee-track">
           <div class="marquee-group">
+            <img src="./examples/carousel/f-3.jpg" alt="" />
             <img src="./examples/carousel/f-4.jpg" alt="" />
             <img src="./examples/carousel/f-1.jpg" alt="" />
-            <img src="./examples/carousel/f-3.jpg" alt="" />
+            <img src="./examples/carousel/f-2.jpg" alt="" />
           </div>
           <div class="marquee-group" aria-hidden="true">
+            <img src="./examples/carousel/f-3.jpg" alt="" />
             <img src="./examples/carousel/f-4.jpg" alt="" />
             <img src="./examples/carousel/f-1.jpg" alt="" />
+            <img src="./examples/carousel/f-2.jpg" alt="" />
+          </div>
+          <div class="marquee-group" aria-hidden="true">
             <img src="./examples/carousel/f-3.jpg" alt="" />
+            <img src="./examples/carousel/f-4.jpg" alt="" />
+            <img src="./examples/carousel/f-1.jpg" alt="" />
+            <img src="./examples/carousel/f-2.jpg" alt="" />
           </div>
         </div>
       </div>
 
-      <div class="marquee" style="--duration: 58s">
+      <div class="marquee" style="--duration: 54s">
         <div class="marquee-track">
           <div class="marquee-group">
             <img src="./examples/carousel/f-2.jpg" alt="" />
-            <img src="./examples/carousel/f-4.jpg" alt="" />
             <img src="./examples/carousel/f-1.jpg" alt="" />
+            <img src="./examples/carousel/f-4.jpg" alt="" />
+            <img src="./examples/carousel/f-3.jpg" alt="" />
           </div>
           <div class="marquee-group" aria-hidden="true">
             <img src="./examples/carousel/f-2.jpg" alt="" />
-            <img src="./examples/carousel/f-4.jpg" alt="" />
             <img src="./examples/carousel/f-1.jpg" alt="" />
+            <img src="./examples/carousel/f-4.jpg" alt="" />
+            <img src="./examples/carousel/f-3.jpg" alt="" />
+          </div>
+          <div class="marquee-group" aria-hidden="true">
+            <img src="./examples/carousel/f-2.jpg" alt="" />
+            <img src="./examples/carousel/f-1.jpg" alt="" />
+            <img src="./examples/carousel/f-4.jpg" alt="" />
+            <img src="./examples/carousel/f-3.jpg" alt="" />
           </div>
         </div>
       </div>

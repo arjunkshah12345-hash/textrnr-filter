@@ -582,9 +582,9 @@ input[type="range"]::-moz-range-thumb {
 
 .marquee-group img {
   display: block;
-  height: clamp(170px, 24vw, 280px);
+  height: clamp(200px, 28vw, 320px);
   width: auto;
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 3 / 4;
   object-fit: cover;
   border-radius: var(--radius-md);
   border: 1px solid var(--line);

@@ -1,6 +1,6 @@
 /**
  * textrnr-style lo-fi night filter (browser)
- * Soft focus + bloom + warm/cool grade + vignette + fine grain + light CA
+ * Soft focus + bloom + warm/cool grade + vignette + colored grain + CA
  */
 
 function clamp(v, lo = 0, hi = 255) {
@@ -51,21 +51,7 @@ function softBlur(sourceCanvas, radius) {
   return out;
 }
 
-/** Mix sharp + soft so the frame keeps structure */
-function softFocusMix(sourceCanvas, radius, mix = 0.48) {
-  const soft = softBlur(sourceCanvas, radius);
-  const w = sourceCanvas.width;
-  const h = sourceCanvas.height;
-  const out = makeCanvas(w, h);
-  const ctx = out.getContext("2d");
-  ctx.drawImage(sourceCanvas, 0, 0);
-  ctx.globalAlpha = Math.max(0, Math.min(1, mix));
-  ctx.drawImage(soft, 0, 0);
-  ctx.globalAlpha = 1;
-  return out;
-}
-
-function bloom(sourceCanvas, strength = 0.38, threshold = 168) {
+function bloom(sourceCanvas, strength = 0.55, threshold = 150) {
   const w = sourceCanvas.width;
   const h = sourceCanvas.height;
   const srcCtx = sourceCanvas.getContext("2d");
@@ -78,16 +64,15 @@ function bloom(sourceCanvas, strength = 0.38, threshold = 168) {
   for (let i = 0; i < d.length; i += 4) {
     const lum = 0.2126 * d[i] + 0.7152 * d[i + 1] + 0.0722 * d[i + 2];
     const m = Math.max(0, Math.min(1, (lum - threshold) / (255 - threshold)));
-    const soft = m * m;
-    bid.data[i] = d[i] * soft;
-    bid.data[i + 1] = d[i + 1] * soft;
-    bid.data[i + 2] = d[i + 2] * soft;
+    bid.data[i] = d[i] * m;
+    bid.data[i + 1] = d[i + 1] * m;
+    bid.data[i + 2] = d[i + 2] * m;
     bid.data[i + 3] = 255;
   }
   bctx.putImageData(bid, 0, 0);
 
-  const blurred = softBlur(bright, 14);
-  const blurred2 = softBlur(blurred, 10);
+  const blurred = softBlur(bright, 18);
+  const blurred2 = softBlur(blurred, 12);
   const bloomData = getRGB(blurred2.getContext("2d"), w, h).data;
 
   const out = makeCanvas(w, h);
@@ -95,44 +80,49 @@ function bloom(sourceCanvas, strength = 0.38, threshold = 168) {
   const oid = octx.createImageData(w, h);
   for (let i = 0; i < d.length; i += 4) {
     oid.data[i] = clamp(d[i] + bloomData[i] * strength);
-    oid.data[i + 1] = clamp(d[i + 1] + bloomData[i + 1] * strength * 0.92);
-    oid.data[i + 2] = clamp(d[i + 2] + bloomData[i + 2] * strength * 0.78);
+    oid.data[i + 1] = clamp(d[i + 1] + bloomData[i + 1] * strength);
+    oid.data[i + 2] = clamp(d[i + 2] + bloomData[i + 2] * strength);
     oid.data[i + 3] = 255;
   }
   octx.putImageData(oid, 0, 0);
   return out;
 }
 
-function warmCoolGrade(sourceCanvas, warmth = 0.12) {
+function warmCoolGrade(sourceCanvas, warmth = 0.18) {
   const w = sourceCanvas.width;
   const h = sourceCanvas.height;
   const ctx = sourceCanvas.getContext("2d");
   const img = getRGB(ctx, w, h);
   const d = img.data;
-  const warm = [1.0, 0.78, 0.55];
-  const cool = [0.42, 0.58, 0.78];
+  const warm = [1.0, 0.72, 0.42];
+  const cool = [0.35, 0.55, 0.85];
 
   for (let i = 0; i < d.length; i += 4) {
     let r = d[i] / 255;
     let g = d[i + 1] / 255;
     let b = d[i + 2] / 255;
     const lum = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-    const shadows = Math.max(0, Math.min(1, 1 - lum * 1.25));
-    const highlights = Math.max(0, Math.min(1, (lum - 0.42) / 0.58));
+    const shadows = Math.max(0, Math.min(1, 1 - lum * 1.35));
+    const highlights = Math.max(0, Math.min(1, (lum - 0.35) / 0.65));
 
-    const wh = warmth * highlights * 0.72;
-    r = r * (1 - wh) + warm[0] * wh * Math.max(r, 0.2);
-    g = g * (1 - wh) + warm[1] * wh * Math.max(g, 0.2);
-    b = b * (1 - wh) + warm[2] * wh * Math.max(b, 0.2);
+    const hr = Math.max(r, 0.15);
+    const hg = Math.max(g, 0.15);
+    const hb = Math.max(b, 0.15);
+    r = r * (1 - warmth * highlights) + warm[0] * warmth * highlights * hr;
+    g = g * (1 - warmth * highlights) + warm[1] * warmth * highlights * hg;
+    b = b * (1 - warmth * highlights) + warm[2] * warmth * highlights * hb;
 
-    const ws = warmth * 0.55 * shadows;
-    r = r * (1 - ws) + cool[0] * ws * Math.max(r, 0.1);
-    g = g * (1 - ws) + cool[1] * ws * Math.max(g, 0.1);
-    b = b * (1 - ws) + cool[2] * ws * Math.max(b, 0.1);
+    const sr = Math.max(r, 0.08);
+    const sg = Math.max(g, 0.08);
+    const sb = Math.max(b, 0.08);
+    const ws = warmth * 0.85;
+    r = r * (1 - ws * shadows) + cool[0] * ws * shadows * sr;
+    g = g * (1 - ws * shadows) + cool[1] * ws * shadows * sg;
+    b = b * (1 - ws * shadows) + cool[2] * ws * shadows * sb;
 
-    r = Math.max(0, Math.min(1, (r - 0.02) / 0.98));
-    g = Math.max(0, Math.min(1, (g - 0.02) / 0.98));
-    b = Math.max(0, Math.min(1, (b - 0.02) / 0.98));
+    r = Math.max(0, Math.min(1, (r - 0.04) / 0.96));
+    g = Math.max(0, Math.min(1, (g - 0.04) / 0.96));
+    b = Math.max(0, Math.min(1, (b - 0.04) / 0.96));
 
     d[i] = clamp(r * 255);
     d[i + 1] = clamp(g * 255);
@@ -148,20 +138,23 @@ function adjustColor(sourceCanvas, contrast, saturation, brightness) {
   const ctx = sourceCanvas.getContext("2d");
   const img = getRGB(ctx, w, h);
   const d = img.data;
+  const c = contrast;
+  const s = saturation;
+  const br = brightness;
 
   for (let i = 0; i < d.length; i += 4) {
     let r = d[i] / 255;
     let g = d[i + 1] / 255;
     let b = d[i + 2] / 255;
 
-    r = ((r - 0.5) * contrast + 0.5) * brightness;
-    g = ((g - 0.5) * contrast + 0.5) * brightness;
-    b = ((b - 0.5) * contrast + 0.5) * brightness;
+    r = ((r - 0.5) * c + 0.5) * br;
+    g = ((g - 0.5) * c + 0.5) * br;
+    b = ((b - 0.5) * c + 0.5) * br;
 
     const lum = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-    r = lum + (r - lum) * saturation;
-    g = lum + (g - lum) * saturation;
-    b = lum + (b - lum) * saturation;
+    r = lum + (r - lum) * s;
+    g = lum + (g - lum) * s;
+    b = lum + (b - lum) * s;
 
     d[i] = clamp(r * 255);
     d[i + 1] = clamp(g * 255);
@@ -171,7 +164,7 @@ function adjustColor(sourceCanvas, contrast, saturation, brightness) {
   return sourceCanvas;
 }
 
-function slightCA(sourceCanvas, shift = 1) {
+function slightCA(sourceCanvas, shift = 2) {
   const w = sourceCanvas.width;
   const h = sourceCanvas.height;
   const ctx = sourceCanvas.getContext("2d");
@@ -179,8 +172,7 @@ function slightCA(sourceCanvas, shift = 1) {
   const out = ctx.createImageData(w, h);
   const s = src.data;
   const o = out.data;
-  const sh = Math.max(0, shift | 0);
-  if (sh === 0) return sourceCanvas;
+  const sh = Math.max(1, shift | 0);
 
   for (let y = 0; y < h; y++) {
     for (let x = 0; x < w; x++) {
@@ -189,10 +181,9 @@ function slightCA(sourceCanvas, shift = 1) {
       const xb = Math.max(0, x - sh);
       const ir = (y * w + xr) * 4;
       const ib = (y * w + xb) * 4;
-      // blend CA lightly with original green channel center
-      o[i] = Math.round(s[i] * 0.35 + s[ir] * 0.65);
+      o[i] = s[ir];
       o[i + 1] = s[i + 1];
-      o[i + 2] = Math.round(s[i + 2] * 0.35 + s[ib + 2] * 0.65);
+      o[i + 2] = s[ib + 2];
       o[i + 3] = 255;
     }
   }
@@ -200,7 +191,7 @@ function slightCA(sourceCanvas, shift = 1) {
   return sourceCanvas;
 }
 
-function vignette(sourceCanvas, strength = 0.36) {
+function vignette(sourceCanvas, strength = 0.55) {
   const w = sourceCanvas.width;
   const h = sourceCanvas.height;
   const ctx = sourceCanvas.getContext("2d");
@@ -208,8 +199,8 @@ function vignette(sourceCanvas, strength = 0.36) {
   const d = img.data;
   const cx = (w - 1) / 2;
   const cy = (h - 1) / 2;
-  const rx = w * 0.82;
-  const ry = h * 0.82;
+  const rx = w * 0.72;
+  const ry = h * 0.72;
 
   for (let y = 0; y < h; y++) {
     for (let x = 0; x < w; x++) {
@@ -218,8 +209,8 @@ function vignette(sourceCanvas, strength = 0.36) {
       const dy = (y - cy) / ry;
       const r = Math.sqrt(dx * dx + dy * dy);
       const mask = Math.max(
-        0.42,
-        Math.min(1, 1 - strength * Math.pow(Math.max(0, r - 0.28), 1.5))
+        0.15,
+        Math.min(1, 1 - strength * Math.pow(Math.max(0, r - 0.15), 1.35))
       );
       d[i] *= mask;
       d[i + 1] *= mask;
@@ -230,17 +221,15 @@ function vignette(sourceCanvas, strength = 0.36) {
   return sourceCanvas;
 }
 
-/** Fine film grain — luma-led, low chroma, resolution-aware */
-function coloredGrain(sourceCanvas, amount = 12, chroma = 0.22, seed = 7) {
+function coloredGrain(sourceCanvas, amount = 36, chroma = 0.65, seed = 7) {
   const w = sourceCanvas.width;
   const h = sourceCanvas.height;
   const ctx = sourceCanvas.getContext("2d");
   const img = getRGB(ctx, w, h);
   const d = img.data;
   const rnd = mulberry32(seed);
-  const scale = Math.max(0.55, Math.min(1.15, 900 / Math.max(w, h)));
-  const amp = amount * scale;
 
+  // Box-Muller
   function gauss() {
     const u = 1 - rnd();
     const v = 1 - rnd();
@@ -249,11 +238,11 @@ function coloredGrain(sourceCanvas, amount = 12, chroma = 0.22, seed = 7) {
 
   for (let i = 0; i < d.length; i += 4) {
     const lum = 0.2126 * d[i] + 0.7152 * d[i + 1] + 0.0722 * d[i + 2];
-    const mid = 0.4 + 0.6 * (1 - Math.abs(lum - 128) / 128);
-    const mono = gauss() * amp;
-    d[i] = clamp(d[i] + (mono + gauss() * amp * chroma) * mid);
-    d[i + 1] = clamp(d[i + 1] + (mono + gauss() * amp * chroma) * mid);
-    d[i + 2] = clamp(d[i + 2] + (mono + gauss() * amp * chroma) * mid);
+    const mid = 0.55 + 0.7 * (1 - Math.abs(lum - 128) / 128);
+    const mono = gauss() * amount;
+    d[i] = clamp(d[i] + (mono + gauss() * amount * chroma) * mid);
+    d[i + 1] = clamp(d[i + 1] + (mono + gauss() * amount * chroma) * mid);
+    d[i + 2] = clamp(d[i + 2] + (mono + gauss() * amount * chroma) * mid);
   }
   ctx.putImageData(img, 0, 0);
   return sourceCanvas;
@@ -267,11 +256,11 @@ function coloredGrain(sourceCanvas, amount = 12, chroma = 0.22, seed = 7) {
 export function applyTextrnrFilter(image, opts = {}) {
   const {
     strength = 1.0,
-    blur = 9,
-    grain = 12,
-    bloomStrength = 0.36,
-    warmth = 0.12,
-    vignetteStrength = 0.34,
+    blur = 14,
+    grain = 38,
+    bloomStrength = 0.62,
+    warmth = 0.2,
+    vignetteStrength = 0.58,
     seed = 7,
     maxEdge = 1600,
   } = opts;
@@ -286,52 +275,50 @@ export function applyTextrnrFilter(image, opts = {}) {
   let work = makeCanvas(w, h);
   drawImageCover(work.getContext("2d"), image, w, h);
 
-  // 1 soft focus (retain structure)
-  work = softFocusMix(work, blur * s, 0.42 + 0.12 * Math.min(s, 1.2));
+  // 1 soft focus
+  work = softBlur(work, blur * s);
 
   // 2 bloom
   work = bloom(work, bloomStrength * s);
 
-  // 3 micro soft
+  // 3 soft pass
   {
     const soft = makeCanvas(w, h);
     const ctx = soft.getContext("2d");
-    ctx.filter = `blur(${Math.max(0.4, 0.9 * s)}px)`;
+    ctx.filter = `blur(${Math.max(0.5, 2.2 * s)}px)`;
     ctx.drawImage(work, 0, 0);
     ctx.filter = "none";
-    ctx.globalAlpha = 0.35;
-    const mix = makeCanvas(w, h);
-    const mctx = mix.getContext("2d");
-    mctx.drawImage(work, 0, 0);
-    mctx.globalAlpha = 0.35;
-    mctx.drawImage(soft, 0, 0);
-    mctx.globalAlpha = 1;
-    work = mix;
+    work = soft;
   }
 
   // 4 grade
   work = warmCoolGrade(work, warmth * s);
 
-  // 5 gentle contrast / sat
-  work = adjustColor(work, 1.04 + 0.04 * s, 1.04 + 0.05 * s, 0.985);
+  // 5 contrast / sat / brightness
+  work = adjustColor(
+    work,
+    1.08 + 0.08 * s,
+    1.12 + 0.1 * s,
+    0.96
+  );
 
-  // 6 light CA
-  work = slightCA(work, s > 0.85 ? 1 : 0);
+  // 6 CA
+  work = slightCA(work, Math.max(1, Math.round(2 * s)));
 
   // 7 vignette
-  work = vignette(work, vignetteStrength * Math.min(s, 1.2));
+  work = vignette(work, vignetteStrength * Math.min(s, 1.4));
 
-  // 8 fine grain
-  work = coloredGrain(work, grain * s, 0.2, seed);
+  // 8 grain
+  work = coloredGrain(work, grain * s, 0.7, seed);
 
   return work;
 }
 
 export const DEFAULTS = {
   strength: 1,
-  blur: 9,
-  grain: 12,
-  bloomStrength: 0.36,
-  warmth: 0.12,
-  vignetteStrength: 0.34,
+  blur: 14,
+  grain: 38,
+  bloomStrength: 0.62,
+  warmth: 0.2,
+  vignetteStrength: 0.58,
 };

@@ -1,11 +1,10 @@
-/* Syne only — full variable face from Google Fonts (self-hosted) */
+/* Syne only — self-hosted variable + static TTF fallback (Safari-safe) */
 @font-face {
   font-family: "Syne";
   font-style: normal;
   font-weight: 400 800;
-  font-display: swap;
-  src: url("../fonts/syne-variable.woff2") format("woff2-variations"),
-    url("../fonts/syne-variable.woff2") format("woff2"),
+  font-display: block;
+  src: url("../fonts/syne-wght-v7.woff2") format("woff2"),
     url("../fonts/Syne-wght.ttf") format("truetype");
 }
 
@@ -42,7 +41,7 @@
 *::before,
 *::after {
   box-sizing: border-box;
-  font-family: "Syne" !important;
+  font-family: "Syne", system-ui, sans-serif !important;
 }
 
 html,
@@ -171,10 +170,11 @@ a {
 
 .hero-title {
   margin: 0 0 1rem;
-  font-weight: 600;
+  font-weight: 800;
   font-size: clamp(2.8rem, 7.5vw, 4.25rem);
   letter-spacing: -0.045em;
   line-height: 1.02;
+  font-variation-settings: "wght" 800;
 }
 
 .hero-lede {

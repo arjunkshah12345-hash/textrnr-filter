@@ -1,38 +1,11 @@
-/* Syne only — self-hosted, no system fallbacks */
+/* Syne only — full variable face from Google Fonts (self-hosted) */
 @font-face {
   font-family: "Syne";
   font-style: normal;
-  font-weight: 100 900;
-  font-display: block;
-  src: url("../fonts/syne-variable.woff2") format("woff2");
-}
-@font-face {
-  font-family: "Syne";
-  font-style: normal;
-  font-weight: 400;
-  font-display: block;
-  src: url("../fonts/syne-400.woff2") format("woff2");
-}
-@font-face {
-  font-family: "Syne";
-  font-style: normal;
-  font-weight: 500;
-  font-display: block;
-  src: url("../fonts/syne-500.woff2") format("woff2");
-}
-@font-face {
-  font-family: "Syne";
-  font-style: normal;
-  font-weight: 600;
-  font-display: block;
-  src: url("../fonts/syne-600.woff2") format("woff2");
-}
-@font-face {
-  font-family: "Syne";
-  font-style: normal;
-  font-weight: 700;
-  font-display: block;
-  src: url("../fonts/syne-700.woff2") format("woff2");
+  font-weight: 400 800;
+  font-display: swap;
+  src: url("../fonts/syne-variable.woff2") format("woff2-variations"),
+    url("../fonts/syne-variable.woff2") format("woff2");
 }
 
 /* VibeUI dark tokens — https://tryjasmine.dev/docs/theming */
@@ -101,6 +74,7 @@ a {
   top: 0;
   bottom: 0;
   width: clamp(48px, 7vw, 96px);
+  pointer-events: none;
   backdrop-filter: blur(14px) saturate(1.05);
   -webkit-backdrop-filter: blur(14px) saturate(1.05);
 }
@@ -123,6 +97,7 @@ a {
   right: 0;
   bottom: 0;
   height: clamp(88px, 16vh, 160px);
+  pointer-events: none;
   backdrop-filter: blur(18px) saturate(1.08);
   -webkit-backdrop-filter: blur(18px) saturate(1.08);
   background: linear-gradient(
@@ -460,9 +435,12 @@ input[type="range"]::-moz-range-thumb {
   background: #090808;
   border: 1px solid var(--line);
   box-shadow: var(--shadow-lift);
+  touch-action: none;
+  cursor: ew-resize;
+  user-select: none;
 }
 
-.compare-stack canvas {
+.compare-stack canvas#compare-after {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -472,20 +450,23 @@ input[type="range"]::-moz-range-thumb {
 
 .compare-before-wrap {
   position: absolute;
-  inset: 0;
+  inset: 0 auto 0 0;
   width: 50%;
+  height: 100%;
   overflow: hidden;
   border-right: 1.5px solid #fff;
   pointer-events: none;
   z-index: 1;
 }
 
-.compare-before-wrap canvas {
+.compare-before-wrap canvas#compare-before {
   position: absolute;
   left: 0;
   top: 0;
+  width: auto; /* set in px by JS to full stack width */
   height: 100%;
   max-width: none;
+  display: block;
 }
 
 .compare-range {
@@ -496,7 +477,8 @@ input[type="range"]::-moz-range-thumb {
   margin: 0;
   opacity: 0;
   cursor: ew-resize;
-  z-index: 2;
+  z-index: 3;
+  pointer-events: auto;
 }
 
 .compare-labels {

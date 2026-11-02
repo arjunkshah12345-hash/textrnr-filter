@@ -121,10 +121,16 @@ function fitCompareCanvases(srcCanvas, destCanvas) {
 }
 
 function updateCompare(pct) {
-  beforeWrap.style.width = `${pct}%`;
+  const p = Math.max(0, Math.min(100, Number(pct)));
+  beforeWrap.style.width = `${p}%`;
   const w = compareStack.clientWidth;
+  // Before canvas must match full stack width so the crop reveals correctly
   compareBefore.style.width = `${w}px`;
-  compareBefore.style.height = "100%";
+  compareBefore.style.height = `${compareStack.clientHeight}px`;
+  compareBefore.style.maxWidth = "none";
+  if (compareRange.value !== String(Math.round(p))) {
+    compareRange.value = String(Math.round(p));
+  }
 }
 
 function showCompare() {
@@ -133,11 +139,37 @@ function showCompare() {
   fitCompareCanvases(beforePreviewCanvas, compareBefore);
   compare.hidden = false;
   stage.classList.add("has-result");
-  updateCompare(Number(compareRange.value));
+  // next frame so layout has real sizes
+  requestAnimationFrame(() => updateCompare(Number(compareRange.value) || 50));
+}
+
+function comparePctFromEvent(e) {
+  const rect = compareStack.getBoundingClientRect();
+  const x = (e.clientX ?? e.touches?.[0]?.clientX ?? 0) - rect.left;
+  return (x / Math.max(1, rect.width)) * 100;
 }
 
 compareRange.addEventListener("input", () => {
   updateCompare(Number(compareRange.value));
+});
+
+let draggingCompare = false;
+function onComparePointer(e) {
+  if (!draggingCompare && e.type !== "pointerdown") return;
+  if (e.type === "pointerdown") {
+    draggingCompare = true;
+    compareStack.setPointerCapture?.(e.pointerId);
+  }
+  updateCompare(comparePctFromEvent(e));
+  e.preventDefault();
+}
+compareStack.addEventListener("pointerdown", onComparePointer);
+compareStack.addEventListener("pointermove", onComparePointer);
+compareStack.addEventListener("pointerup", () => {
+  draggingCompare = false;
+});
+compareStack.addEventListener("pointercancel", () => {
+  draggingCompare = false;
 });
 
 window.addEventListener("resize", () => {

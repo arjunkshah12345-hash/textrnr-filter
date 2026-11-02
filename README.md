@@ -15,9 +15,9 @@ python3 -m http.server 8080
 # open http://localhost:8080
 ```
 
-1. Drop or choose an image  
-2. Tweak strength / blur / grain  
-3. **Apply filter** → **Download PNG**
+1. Drop, paste (⌘V / Ctrl+V), or try the sample  
+2. Pick a preset (Classic / Soft / Heavy / Cold) or tweak sliders  
+3. Filter auto-applies — drag the compare slider, then **Download PNG**
 
 ## Python CLI
 

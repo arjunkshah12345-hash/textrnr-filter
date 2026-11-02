@@ -9,6 +9,20 @@ const beforeEl = document.getElementById("before");
 const afterEl = document.getElementById("after");
 const stage = document.getElementById("stage");
 const sampleBtn = document.getElementById("sample");
+const presetsEl = document.getElementById("presets");
+const compare = document.getElementById("compare");
+const compareStack = document.getElementById("compare-stack");
+const compareRange = document.getElementById("compare-range");
+const beforeWrap = document.getElementById("before-wrap");
+const compareBefore = document.getElementById("compare-before");
+const compareAfter = document.getElementById("compare-after");
+
+const PRESETS = {
+  classic: { strength: 1, blur: 14, grain: 38, warmth: 0.2, vignette: 0.58 },
+  soft: { strength: 0.75, blur: 18, grain: 22, warmth: 0.16, vignette: 0.45 },
+  heavy: { strength: 1.25, blur: 12, grain: 56, warmth: 0.24, vignette: 0.68 },
+  cold: { strength: 1.05, blur: 15, grain: 34, warmth: 0.08, vignette: 0.62 },
+};
 
 const sliders = {
   strength: document.getElementById("strength"),
@@ -28,7 +42,9 @@ const values = {
 
 let sourceImage = null;
 let resultCanvas = null;
+let beforePreviewCanvas = null;
 let processing = false;
+let activePreset = "classic";
 
 function setStatus(msg) {
   statusEl.textContent = msg;
@@ -42,46 +58,131 @@ function syncLabels() {
   values.vignette.textContent = Number(sliders.vignette.value).toFixed(2);
 }
 
+function markPreset(name) {
+  activePreset = name;
+  presetsEl.querySelectorAll(".chip").forEach((chip) => {
+    chip.classList.toggle("is-on", chip.dataset.preset === name);
+  });
+}
+
+function applyPreset(name) {
+  const p = PRESETS[name];
+  if (!p) return;
+  sliders.strength.value = p.strength;
+  sliders.blur.value = p.blur;
+  sliders.grain.value = p.grain;
+  sliders.warmth.value = p.warmth;
+  sliders.vignette.value = p.vignette;
+  syncLabels();
+  markPreset(name);
+}
+
 Object.values(sliders).forEach((el) => {
-  el.addEventListener("input", syncLabels);
+  el.addEventListener("input", () => {
+    syncLabels();
+    markPreset(null);
+  });
 });
 syncLabels();
 
+presetsEl.addEventListener("click", (e) => {
+  const chip = e.target.closest("[data-preset]");
+  if (!chip) return;
+  applyPreset(chip.dataset.preset);
+  if (sourceImage && !processing) process();
+});
+
+function makePreviewCanvas(src, max = 720) {
+  const c = document.createElement("canvas");
+  const sw = src.naturalWidth || src.width;
+  const sh = src.naturalHeight || src.height;
+  const scale = Math.min(1, max / Math.max(sw, sh));
+  c.width = Math.max(1, Math.round(sw * scale));
+  c.height = Math.max(1, Math.round(sh * scale));
+  c.getContext("2d").drawImage(src, 0, 0, c.width, c.height);
+  return c;
+}
+
+function fitCompareCanvases(srcCanvas, destCanvas) {
+  const rect = compareStack.getBoundingClientRect();
+  const cw = Math.max(1, Math.floor(rect.width));
+  const ch = Math.max(1, Math.floor(rect.height));
+  destCanvas.width = cw;
+  destCanvas.height = ch;
+  const ctx = destCanvas.getContext("2d");
+  ctx.fillStyle = "#05070c";
+  ctx.fillRect(0, 0, cw, ch);
+  const scale = Math.min(cw / srcCanvas.width, ch / srcCanvas.height);
+  const dw = srcCanvas.width * scale;
+  const dh = srcCanvas.height * scale;
+  const dx = (cw - dw) / 2;
+  const dy = (ch - dh) / 2;
+  ctx.drawImage(srcCanvas, dx, dy, dw, dh);
+}
+
+function updateCompare(pct) {
+  beforeWrap.style.width = `${pct}%`;
+  const w = compareStack.clientWidth;
+  compareBefore.style.width = `${w}px`;
+  compareBefore.style.height = "100%";
+}
+
+function showCompare() {
+  if (!beforePreviewCanvas || !resultCanvas) return;
+  fitCompareCanvases(resultCanvas, compareAfter);
+  fitCompareCanvases(beforePreviewCanvas, compareBefore);
+  compare.hidden = false;
+  stage.classList.add("has-result");
+  updateCompare(Number(compareRange.value));
+}
+
+compareRange.addEventListener("input", () => {
+  updateCompare(Number(compareRange.value));
+});
+
+window.addEventListener("resize", () => {
+  if (!compare.hidden && resultCanvas) showCompare();
+});
+
 function showPreview(img) {
   beforeEl.replaceChildren();
-  const c = document.createElement("canvas");
-  const max = 720;
-  const scale = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
-  c.width = Math.round(img.naturalWidth * scale);
-  c.height = Math.round(img.naturalHeight * scale);
-  c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
-  beforeEl.appendChild(c);
+  beforePreviewCanvas = makePreviewCanvas(img);
+  beforeEl.appendChild(beforePreviewCanvas);
   afterEl.replaceChildren();
-  afterEl.innerHTML = `<p class="placeholder">Hit apply to run the filter.</p>`;
+  afterEl.innerHTML = `<p class="placeholder">Running filter…</p>`;
+  compare.hidden = true;
+  stage.classList.remove("has-result");
   stage.hidden = false;
   processBtn.disabled = false;
   downloadBtn.disabled = true;
   resultCanvas = null;
 }
 
-function loadFile(file) {
+async function loadFile(file, { auto = true } = {}) {
   if (!file || !file.type.startsWith("image/")) {
     setStatus("Drop an image file (jpg, png, webp).");
     return;
   }
   const url = URL.createObjectURL(file);
   const img = new Image();
-  img.onload = () => {
+  img.onload = async () => {
     URL.revokeObjectURL(url);
     sourceImage = img;
     showPreview(img);
     setStatus(`${file.name} · ${img.naturalWidth}×${img.naturalHeight}`);
+    if (auto) await process();
   };
   img.onerror = () => setStatus("Couldn’t read that image.");
   img.src = url;
 }
 
 drop.addEventListener("click", () => fileInput.click());
+drop.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" || e.key === " ") {
+    e.preventDefault();
+    fileInput.click();
+  }
+});
 fileInput.addEventListener("change", () => {
   if (fileInput.files?.[0]) loadFile(fileInput.files[0]);
 });
@@ -103,6 +204,21 @@ drop.addEventListener("drop", (e) => {
   if (file) loadFile(file);
 });
 
+window.addEventListener("paste", (e) => {
+  const items = e.clipboardData?.items;
+  if (!items) return;
+  for (const item of items) {
+    if (item.type.startsWith("image/")) {
+      const file = item.getAsFile();
+      if (file) {
+        e.preventDefault();
+        loadFile(file);
+      }
+      break;
+    }
+  }
+});
+
 async function process() {
   if (!sourceImage || processing) return;
   processing = true;
@@ -122,21 +238,17 @@ async function process() {
       seed: 7,
       maxEdge: 1600,
     });
+
+    const preview = makePreviewCanvas(resultCanvas);
     afterEl.replaceChildren();
-    const view = document.createElement("canvas");
-    const max = 720;
-    const scale = Math.min(
-      1,
-      max / Math.max(resultCanvas.width, resultCanvas.height)
-    );
-    view.width = Math.round(resultCanvas.width * scale);
-    view.height = Math.round(resultCanvas.height * scale);
-    view.getContext("2d").drawImage(resultCanvas, 0, 0, view.width, view.height);
-    afterEl.appendChild(view);
+    afterEl.appendChild(preview);
+
+    showCompare();
     downloadBtn.disabled = false;
     const ms = Math.round(performance.now() - t0);
+    const presetNote = activePreset ? ` · ${activePreset}` : "";
     setStatus(
-      `Done in ${ms}ms · output ${resultCanvas.width}×${resultCanvas.height}`
+      `Done in ${ms}ms · ${resultCanvas.width}×${resultCanvas.height}${presetNote} · drag slider to compare`
     );
   } catch (err) {
     console.error(err);
@@ -161,10 +273,11 @@ sampleBtn.addEventListener("click", async () => {
   setStatus("Loading sample…");
   const img = new Image();
   img.crossOrigin = "anonymous";
-  img.onload = () => {
+  img.onload = async () => {
     sourceImage = img;
     showPreview(img);
-    setStatus("Sample loaded — hit apply.");
+    setStatus("Sample loaded — applying…");
+    await process();
   };
   img.onerror = () => setStatus("Sample missing locally.");
   img.src = "./examples/sample.jpg";

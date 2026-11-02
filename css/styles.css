@@ -296,3 +296,107 @@ button:not(:disabled):hover {
   font-size: 0.85em;
   color: var(--fog);
 }
+
+.presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 1.1rem;
+}
+
+.chip {
+  appearance: none;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--mute);
+  border-radius: 999px;
+  padding: 0.42rem 0.85rem;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.chip:hover {
+  color: var(--fog);
+  border-color: rgba(216, 226, 236, 0.28);
+}
+
+.chip.is-on {
+  color: #1a1008;
+  background: linear-gradient(135deg, var(--amber), var(--amber-deep));
+  border-color: transparent;
+}
+
+.compare {
+  margin-bottom: 0.25rem;
+}
+
+.compare-stack {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: #05070c;
+  aspect-ratio: 4 / 5;
+  max-height: 560px;
+}
+
+.compare-stack canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.compare-before-wrap {
+  position: absolute;
+  inset: 0;
+  width: 50%;
+  overflow: hidden;
+  border-right: 2px solid rgba(240, 160, 90, 0.85);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.compare-before-wrap canvas {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  max-width: none;
+}
+
+.compare-range {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 2.4rem;
+  width: 100%;
+  margin: 0;
+  z-index: 2;
+  accent-color: var(--amber);
+  background: transparent;
+}
+
+.compare-labels {
+  position: absolute;
+  left: 0.75rem;
+  right: 0.75rem;
+  bottom: 0.65rem;
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(216, 226, 236, 0.7);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.stage.has-result .pair {
+  display: none;
+}

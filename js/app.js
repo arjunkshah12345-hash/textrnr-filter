@@ -110,9 +110,10 @@ function fitCompareCanvases(srcCanvas, destCanvas) {
   destCanvas.width = cw;
   destCanvas.height = ch;
   const ctx = destCanvas.getContext("2d");
-  ctx.fillStyle = "#05070c";
+  ctx.fillStyle = "#050403";
   ctx.fillRect(0, 0, cw, ch);
-  const scale = Math.min(cw / srcCanvas.width, ch / srcCanvas.height);
+  // cover the stage — no letterbox
+  const scale = Math.max(cw / srcCanvas.width, ch / srcCanvas.height);
   const dw = srcCanvas.width * scale;
   const dh = srcCanvas.height * scale;
   const dx = (cw - dw) / 2;

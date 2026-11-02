@@ -152,7 +152,6 @@ function showPreview(img) {
   afterEl.innerHTML = `<p class="placeholder">Running filter…</p>`;
   compare.hidden = true;
   stage.classList.remove("has-result");
-  stage.hidden = false;
   processBtn.disabled = false;
   downloadBtn.disabled = true;
   resultCanvas = null;
@@ -269,16 +268,25 @@ downloadBtn.addEventListener("click", () => {
   a.click();
 });
 
-sampleBtn.addEventListener("click", async () => {
+async function loadSample() {
   setStatus("Loading sample…");
   const img = new Image();
   img.crossOrigin = "anonymous";
-  img.onload = async () => {
-    sourceImage = img;
-    showPreview(img);
-    setStatus("Sample loaded — applying…");
-    await process();
-  };
-  img.onerror = () => setStatus("Sample missing locally.");
-  img.src = "./examples/sample.jpg";
+  await new Promise((resolve, reject) => {
+    img.onload = resolve;
+    img.onerror = reject;
+    img.src = "./examples/sample.jpg";
+  });
+  sourceImage = img;
+  showPreview(img);
+  setStatus("Sample — applying…");
+  await process();
+}
+
+sampleBtn.addEventListener("click", () => {
+  loadSample().catch(() => setStatus("Sample missing locally."));
 });
+
+loadSample().catch(() =>
+  setStatus("Drop a photo, paste, or tap Sample.")
+);

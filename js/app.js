@@ -135,12 +135,15 @@ function updateCompare(pct) {
 
 function showCompare() {
   if (!beforePreviewCanvas || !resultCanvas) return;
-  fitCompareCanvases(resultCanvas, compareAfter);
-  fitCompareCanvases(beforePreviewCanvas, compareBefore);
+  // Unhide first — getBoundingClientRect is 0 while [hidden]/display:none
   compare.hidden = false;
   stage.classList.add("has-result");
-  // next frame so layout has real sizes
-  requestAnimationFrame(() => updateCompare(Number(compareRange.value) || 50));
+  const paint = () => {
+    fitCompareCanvases(resultCanvas, compareAfter);
+    fitCompareCanvases(beforePreviewCanvas, compareBefore);
+    updateCompare(Number(compareRange.value) || 50);
+  };
+  requestAnimationFrame(() => requestAnimationFrame(paint));
 }
 
 function comparePctFromEvent(e) {

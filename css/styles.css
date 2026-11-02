@@ -41,10 +41,20 @@ body {
 }
 
 body {
-  font-family: var(--font-sans);
+  font-family: "Syne", var(--font-sans);
   color: var(--ink);
   background: var(--canvas);
   -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+.brand,
+.nav-brand,
+.hero-title,
+.file-drop-label {
+  font-family: "Syne", var(--font-display);
 }
 
 a {
